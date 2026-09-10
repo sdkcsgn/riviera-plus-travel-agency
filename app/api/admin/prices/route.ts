@@ -1,0 +1,2 @@
+import {NextResponse} from 'next/server';import {db} from '@/lib/db';import {isAdmin} from '@/lib/auth';
+export async function PATCH(req:Request){if(!(await isAdmin()))return NextResponse.json({error:'Unauthorized'},{status:401});const body=await req.json();const id=Number(body.id);const data:{priceTry?:number|null,priceEur?:number|null,priceUsd?:number|null}={};for(const k of ['priceTry','priceEur','priceUsd'] as const){if(body[k]!==undefined)data[k]=body[k]===''?null:Number(body[k])}const t=await db.tour.update({where:{id},data});return NextResponse.json(t)}

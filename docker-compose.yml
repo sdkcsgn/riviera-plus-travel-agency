@@ -1,0 +1,14 @@
+services:
+  postgres:
+    image: postgres:17-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: riviera
+      POSTGRES_PASSWORD: riviera
+      POSTGRES_DB: riviera_plus
+    ports:
+      - "5432:5432"
+    volumes:
+      - riviera_pgdata:/var/lib/postgresql/data
+volumes:
+  riviera_pgdata:
