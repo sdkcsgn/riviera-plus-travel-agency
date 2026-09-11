@@ -32,7 +32,7 @@ const translations = {
     tourExperience: 'Tur & deneyim',
     language: 'Dil',
     localExperiences: 'Yerel deneyimler',
-    bookingRequest247: 'Rezervasyon talebi',
+    bookingRequest247: 'Rezervasyon',
 
     chooseExperience: 'Deneyiminizi seçin',
     chooseExperienceText:
@@ -43,7 +43,7 @@ const translations = {
     popularTours: 'Popüler Turlar',
     toursShown: 'tur gösteriliyor',
 
-    startingFrom: 'BAŞLANGIÇ',
+    startingFrom: 'KİŞİ BAŞI',
     contactForPrice: 'Fiyat için iletişime geçin',
     details: 'Detayları Gör →',
 
@@ -103,7 +103,7 @@ const translations = {
     tourExperience: 'Tours & experiences',
     language: 'Languages',
     localExperiences: 'Local experiences',
-    bookingRequest247: 'Booking requests',
+    bookingRequest247: 'Reservations',
 
     chooseExperience: 'Choose your experience',
     chooseExperienceText:
@@ -114,7 +114,7 @@ const translations = {
     popularTours: 'Popular Tours',
     toursShown: 'tours shown',
 
-    startingFrom: 'FROM',
+    startingFrom: 'PER PERSON',
     contactForPrice: 'Contact us for price',
     details: 'View Details →',
 
@@ -174,7 +174,7 @@ const translations = {
     tourExperience: 'Touren & Erlebnisse',
     language: 'Sprachen',
     localExperiences: 'Lokale Erlebnisse',
-    bookingRequest247: 'Reservierungsanfragen',
+    bookingRequest247: 'Reservierung',
 
     chooseExperience: 'Wählen Sie Ihr Erlebnis',
     chooseExperienceText:
@@ -185,7 +185,7 @@ const translations = {
     popularTours: 'Beliebte Touren',
     toursShown: 'Touren angezeigt',
 
-    startingFrom: 'AB',
+    startingFrom: 'PRO PERSON',
     contactForPrice: 'Preis auf Anfrage',
     details: 'Details ansehen →',
 
@@ -245,7 +245,7 @@ const translations = {
     tourExperience: 'Туры и развлечения',
     language: 'Языка',
     localExperiences: 'Местные развлечения',
-    bookingRequest247: 'Заявки на бронирование',
+    bookingRequest247: 'Бронирование',
 
     chooseExperience: 'Выберите впечатление',
     chooseExperienceText:
@@ -256,7 +256,7 @@ const translations = {
     popularTours: 'Популярные туры',
     toursShown: 'туров показано',
 
-    startingFrom: 'ОТ',
+    startingFrom: 'ЗА ЧЕЛОВЕКА',
     contactForPrice: 'Уточните цену',
     details: 'Подробнее →',
 
@@ -482,6 +482,16 @@ export default function HomeClient({tours}: {tours: Tour[]}) {
     window.localStorage.setItem('riviera-language', lang);
     document.documentElement.lang = lang;
   }, [lang]);
+
+  const closeBookingFlow = () => {
+    setBook(false);
+    setSelected(null);
+
+    const url = new URL(window.location.href);
+    url.searchParams.delete('booking');
+    const query = url.searchParams.toString();
+    window.history.replaceState({}, '', `${url.pathname}${query ? `?${query}` : ''}${url.hash}`);
+  };
 
   const t = translations[lang];
 
@@ -814,10 +824,7 @@ export default function HomeClient({tours}: {tours: Tour[]}) {
       {selected && (
         <div
           className="modal"
-          onClick={() => {
-            setSelected(null);
-            setBook(false);
-          }}
+          onClick={closeBookingFlow}
         >
           <div
             className="modalbox"
@@ -825,10 +832,7 @@ export default function HomeClient({tours}: {tours: Tour[]}) {
           >
             <button
               className="close"
-              onClick={() => {
-                setSelected(null);
-                setBook(false);
-              }}
+              onClick={closeBookingFlow}
             >
               ×
             </button>
@@ -868,7 +872,7 @@ export default function HomeClient({tours}: {tours: Tour[]}) {
         <BookingForm
           tour={selected}
           lang={lang}
-          onClose={() => setBook(false)}
+          onClose={closeBookingFlow}
         />
       )}
     </>
