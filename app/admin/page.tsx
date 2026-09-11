@@ -54,7 +54,6 @@ async function saveTour(formData: FormData) {
       descRu: text(formData, 'descRu'),
 
       category: text(formData, 'category'),
-      image: text(formData, 'image'),
       duration: text(formData, 'duration'),
       pickup: text(formData, 'pickup'),
 
@@ -257,7 +256,18 @@ export default async function Admin() {
     );
   }
 
-  const tours = await db.tour.findMany({ orderBy: { id: 'asc' } });
+  const tours = await db.tour.findMany({
+    orderBy: { id: 'asc' },
+    include: {
+      images: {
+        orderBy: [
+          { isCover: 'desc' },
+          { sortOrder: 'asc' },
+          { id: 'asc' },
+        ],
+      },
+    },
+  });
   const bookings = await db.booking.findMany({
     include: { tour: true },
     orderBy: { createdAt: 'desc' },
@@ -324,18 +334,18 @@ export default async function Admin() {
                     />
                   </label>
 
-                  <label style={labelStyle}>
-                    Görsel Yolu
-                    <input
-                      name="image"
-                      defaultValue={tour.image}
-                      style={inputStyle}
-                      required
-                    />
-                  </label>
                 </div>
 
-                <TourImageManager tourId={tour.id} />
+                <TourImageManager
+                  tourId={tour.id}
+                  initialImages={tour.images.map((image) => ({
+                    id: image.id,
+                    url: image.url,
+                    path: image.path,
+                    isCover: image.isCover,
+                    sortOrder: image.sortOrder,
+                  }))}
+                />
 
                 <div style={grid2}>
                   <label style={labelStyle}>

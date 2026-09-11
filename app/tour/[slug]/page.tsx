@@ -1,7 +1,8 @@
-import Link from 'next/link';
+﻿import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { db } from '@/lib/db';
 import type { Lang } from '@/lib/tourDetails';
+import TourGallery from '@/components/TourGallery';
 
 export const dynamic = 'force-dynamic';
 
@@ -145,6 +146,15 @@ export default async function TourDetailPage({
 
   const tour = await db.tour.findUnique({
     where: { slug },
+    include: {
+      images: {
+        orderBy: [
+          { isCover: 'desc' },
+          { sortOrder: 'asc' },
+          { id: 'asc' },
+        ],
+      },
+    },
   });
 
   if (!tour || !tour.active) {
@@ -212,6 +222,13 @@ export default async function TourDetailPage({
         .location{font-size:15px;font-weight:700;color:#5d6f69;margin-bottom:22px}
         .grid{display:grid;grid-template-columns:minmax(0,2fr) 320px;gap:22px;align-items:start}
         .heroimg{width:100%;height:395px;object-fit:cover;border-radius:17px;display:block}
+        .tourGallery{display:grid;gap:12px}
+        .tourGalleryMain{overflow:hidden;border-radius:17px;background:#e9eeec}
+        .tourGalleryThumbs{display:flex;gap:10px;overflow-x:auto;padding:2px 2px 6px;scrollbar-width:thin}
+        .tourGalleryThumb{flex:0 0 96px;width:96px;height:72px;padding:0;border:2px solid transparent;border-radius:11px;overflow:hidden;background:#fff;cursor:pointer;transition:transform .15s ease,border-color .15s ease,box-shadow .15s ease}
+        .tourGalleryThumb:hover{transform:translateY(-1px)}
+        .tourGalleryThumb.active{border-color:#dfbd4e;box-shadow:0 0 0 2px rgba(223,189,78,.18)}
+        .tourGalleryThumb img{width:100%;height:100%;object-fit:cover;display:block}
         .card{background:#fff;border:1px solid #e1e6e4;border-radius:17px;box-shadow:0 8px 24px rgba(17,54,45,.06)}
         .content{margin-top:20px;padding:24px}
         .content h2{font-size:25px;margin:0 0 18px;padding-bottom:14px;border-bottom:1px solid #e7ebea}
@@ -248,6 +265,7 @@ export default async function TourDetailPage({
           .facts{grid-template-columns:1fr 1fr}
           h1{font-size:32px}
           .heroimg{height:300px}
+          .tourGalleryThumb{flex-basis:88px;width:88px;height:66px}
         }
         @media(max-width:520px){
           .facts{grid-template-columns:1fr}
@@ -257,6 +275,7 @@ export default async function TourDetailPage({
           .back{font-size:12px;padding:10px 12px}
           h1{font-size:28px}
           .heroimg{height:240px}
+          .tourGalleryThumb{flex-basis:78px;width:78px;height:58px}
         }
       `}</style>
 
@@ -311,7 +330,16 @@ export default async function TourDetailPage({
 
         <div className="grid">
           <div>
-            <img className="heroimg" src={tour.image} alt={title} />
+            <TourGallery
+              title={title}
+              fallbackImage={tour.image}
+              images={tour.images.map((image) => ({
+                id: image.id,
+                url: image.url,
+                isCover: image.isCover,
+                sortOrder: image.sortOrder,
+              }))}
+            />
 
             <section className="card content">
               <h2>{t.description}</h2>
