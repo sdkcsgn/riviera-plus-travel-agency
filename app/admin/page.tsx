@@ -1,6 +1,7 @@
-import { db } from '@/lib/db';
+﻿import { db } from '@/lib/db';
 import { isAdmin, login, logout } from '@/lib/auth';
 import { revalidatePath } from 'next/cache';
+import TourImageManager from '@/components/TourImageManager';
 
 async function signIn(formData: FormData) {
   'use server';
@@ -313,7 +314,7 @@ export default async function Admin() {
                 <input type="hidden" name="slug" value={tour.slug} />
 
                 <div style={grid2}>
-                  <label style={labelStyle}>
+  <label style={labelStyle}>
                     Kategori
                     <input
                       name="category"
@@ -333,6 +334,8 @@ export default async function Admin() {
                     />
                   </label>
                 </div>
+
+                <TourImageManager tourId={tour.id} />
 
                 <div style={grid2}>
                   <label style={labelStyle}>

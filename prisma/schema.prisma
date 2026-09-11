@@ -23,28 +23,25 @@ enum PaymentStatus {
 }
 
 model Tour {
-  id        Int      @id @default(autoincrement())
-  slug      String   @unique
+  id   Int    @id @default(autoincrement())
+  slug String @unique
 
-  nameTr    String
-  nameEn    String
-  nameDe    String
-  nameRu    String
+  nameTr String
+  nameEn String
+  nameDe String
+  nameRu String
 
-  // Ana sayfadaki kısa açıklamalar
-  descTr    String
-  descEn    String
-  descDe    String
-  descRu    String
+  descTr String
+  descEn String
+  descDe String
+  descRu String
 
-  category  String
-  image     String
+  category String
+  image    String
 
-  // Mevcut alanlar - geriye dönük uyumluluk için korunuyor
-  duration  String   @default("Süre seçilebilir")
-  pickup    String   @default("Antalya bölgesi")
+  duration String @default("Süre seçilebilir")
+  pickup   String @default("Antalya bölgesi")
 
-  // Detay sayfası - Türkçe
   detailDescTr String @default("")
   locationTr   String @default("")
   durationTr   String @default("")
@@ -52,7 +49,6 @@ model Tour {
   excludedTr   String @default("")
   importantTr  String @default("")
 
-  // Detail page - English
   detailDescEn String @default("")
   locationEn   String @default("")
   durationEn   String @default("")
@@ -60,7 +56,6 @@ model Tour {
   excludedEn   String @default("")
   importantEn  String @default("")
 
-  // Detailseite - Deutsch
   detailDescDe String @default("")
   locationDe   String @default("")
   durationDe   String @default("")
@@ -68,7 +63,6 @@ model Tour {
   excludedDe   String @default("")
   importantDe  String @default("")
 
-  // Страница тура - Русский
   detailDescRu String @default("")
   locationRu   String @default("")
   durationRu   String @default("")
@@ -76,15 +70,16 @@ model Tour {
   excludedRu   String @default("")
   importantRu  String @default("")
 
-  priceTry  Int?
-  priceEur  Int?
-  priceUsd  Int?
+  priceTry Int?
+  priceEur Int?
+  priceUsd Int?
 
   active    Boolean  @default(true)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
   bookings Booking[]
+  images   TourImage[]
 }
 
 model Booking {
@@ -106,4 +101,21 @@ model Booking {
   stripeSessionId String?
   createdAt       DateTime      @default(now())
   updatedAt       DateTime      @updatedAt
+}
+
+model TourImage {
+  id     Int  @id @default(autoincrement())
+  tourId Int
+  tour   Tour @relation(fields: [tourId], references: [id], onDelete: Cascade)
+
+  url  String
+  path String
+
+  isCover   Boolean @default(false)
+  sortOrder Int     @default(0)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([tourId, sortOrder])
 }
